@@ -1,38 +1,21 @@
-# http://santiago.begueria.es/2010/10/generating-spatially-correlated-random-fields-with-r/
 rm(list=ls())
-library(gstat)
 library(raster)
 library(viridis)
 setwd("C:/WORK/FUNCT.NET/TOY")
 
-## Create a spatially correlated random landscape 
-## Parameter 'psill' controls the range of values
-## Parameter 'range' controls the spatial correlation, how similar values are spatially aggregated
-xy <- expand.grid(1:100, 1:100)
-names(xy) <- c('x','y')
-g.dummy <- gstat(formula=z~1, locations=~x+y, dummy=T, beta=1, 
-                 model=vgm(psill=0.05, range=3, model='Exp'), nmax=20)
-yy <- predict(g.dummy, newdata=xy, nsim=4)
-gridded(yy) = ~x+y
-spplot(obj=yy[1])
-
-## Convert continuous random landscape into a land-cover map
-## Land-covers:
+## Land-cover types
 bare <- 1
-tree <- 6
 crop <- 2
-qplant <- 3
-pplant <- 4
-aplant <- 5
-# Let's plot the 4 initial maps
+tree <- 3
+qplant <- 4
+pplant <- 5
+aplant <- 6
+
+## Random cluster landscape (Let's plot the 4 initial maps):
 par(mfrow=c(2,2))
 ## Initialize land_cover10
-land.cover <- raster(yy)
-land.cover[] <- ifelse(land.cover[]<1,crop,tree)
-rnd.bare <- sample(1:ncell(land.cover),round(runif(1,1,100)),replace=F)
-land.cover[rnd.bare] <- bare
-extent(land.cover) <- c(0,100,0,100)
-plot(land.cover, col=rainbow(6), main="land")
+land.cover <- NLMR::nlm_randomcluster(100, 100, resolution=1, p=0.37, ai=c(0.03, 0.54, 0.43), neighbourhood=8, rescale = F)
+plot(land.cover,  main="land")
 writeRaster(land.cover, file="Model/inputlyrs/neutral/land_cover10.img", format="HFA", datatype="INT2S", overwrite=T, NAflag=0)
 ## Initial communities 
 forest <- land.cover
@@ -51,7 +34,7 @@ writeRaster(land.cover, file="Model/inputlyrs/neutral/land_cover0.img", format="
 ecoreg <- NLMR::nlm_mosaicgibbs(ncol=100, nrow=100, resolution=1, germs=9, R=1, patch_classes=3, rescale=F)
 plot(ecoreg, col=viridis(3), main="ecoregions")
 writeRaster(ecoreg, file="Model/inputlyrs/neutral/ecoregions.img", format="HFA", datatype="INT2S", overwrite=T, NAflag=0)
-# managment areas and stands
+## Managment areas and stands
 mgmt.area <- NLMR::nlm_mosaicgibbs(ncol=100, nrow=100, resolution=1, germs=3, R=1, patch_classes=3, rescale=F)
 plot(mgmt.area, col=plasma(3), main="management areas")
 writeRaster(mgmt.area, file="Model/inputlyrs/neutral/management_areas.img", format="HFA", datatype="INT2S", overwrite=T, NAflag=0)
@@ -61,15 +44,7 @@ writeRaster(land.cover, file="Model/inputlyrs/neutral/stands.img", format="HFA",
 
 
 
-
 ##### My 4x4 dummy landscape
-rm(list=ls())
-bare <- 1
-tree <- 6
-crop <- 2
-qplant <- 3
-pplant <- 4
-aplant <- 5
 # land
 xyz <- data.frame(rep(1:4,4), rep(1:4,each=4), rep(tree,16))
 land <- rasterFromXYZ(xyz, res=c(NA,NA), crs=NA, digits=5)
@@ -124,3 +99,27 @@ xyz <- data.frame(rep(1:4,4), rep(1:4,each=4), c(bare, crop, rep(pplant,2), rep(
 land <- rasterFromXYZ(xyz, res=c(NA,NA), crs=NA, digits=5)
 writeRaster(land, file="Model/inputlyrs/land_cover80.img", format="HFA", datatype="INT2S", overwrite=T, NAflag=0)
 writeRaster(land, file="Model/inputlyrs/land_cover90.img", format="HFA", datatype="INT2S", overwrite=T, NAflag=0)
+
+
+
+
+  # # http://santiago.begueria.es/2010/10/generating-spatially-correlated-random-fields-with-r/
+  # library(gstat)
+  # ## Create a spatially correlated random landscape
+  # ## Parameter 'psill' controls the range of values
+  # ## Parameter 'range' controls the spatial correlation, how similar values are spatially aggregated
+  # xy <- expand.grid(1:100, 1:100)
+  # names(xy) <- c('x','y')
+  # g.dummy <- gstat(formula=z~1, locations=~x+y, dummy=T, beta=1,
+  #                  model=vgm(psill=0.05, range=3, model='Exp'), nmax=20)
+  # yy <- predict(g.dummy, newdata=xy, nsim=4)
+  # gridded(yy) = ~x+y
+  # spplot(obj=yy[1])
+  # ## Initialize land_cover10
+  # land.cover <- raster(yy)
+  # land.cover[] <- ifelse(land.cover[]<1,crop,tree)
+  # rnd.bare <- sample(1:ncell(land.cover),round(runif(1,1,100)),replace=F)
+  # land.cover[rnd.bare] <- bare
+  # plot(land.cover, main="land")
+  # writeRaster(land.cover, file="Model/inputlyrs/neutral/land_cover10.img", format="HFA", datatype="INT2S", overwrite=T, NAflag=0)
+

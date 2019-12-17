@@ -84,11 +84,11 @@ Prescription    OakPatchCutting
 >> 	---------   	------------   		------------   	---------- 	--------
 	1	MaxAgeClearcut	5%	    	0	25
 	1	MaxAgeClearcut	10%		30		90
-	1	AspenClearcut	10%
+	1	AspenClearcut	50%
 	1	SelectiveNorthernHardwood	30%	
 	2	SelectiveNorthernHardwood	50%	
-	2	AspenClearcut	10%
-	3	OakPatchCutting		20%	30	80
+	2	AspenClearcut	60%
+
 
 	
 >> ------------

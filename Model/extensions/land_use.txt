@@ -44,7 +44,7 @@ LandCoverChange  RemoveTrees
 
 LandUse "forest"
 >>------------------------------------
-MapCode          6
+MapCode          3
 AllowHarvest?    yes
 LandCoverChange  NoChange
 
@@ -52,7 +52,7 @@ LandCoverChange  NoChange
 LandUse "quercus plantations"
 >>------------------------------------
 >> Transition: to quercus forest
-MapCode          3
+MapCode          4
 AllowHarvest?    yes
 LandCoverChange  RemoveTrees
 	abiebals 1-150
@@ -77,7 +77,7 @@ LandCoverChange  RemoveTrees
 LandUse "pinus plantations"
 >>------------------------------------
 >> Transition: to pine forest
-MapCode          4
+MapCode          5
 AllowHarvest?    yes
 LandCoverChange  RemoveTrees
 	abiebals 1-150
@@ -102,7 +102,7 @@ LandCoverChange  RemoveTrees
 LandUse "sugar maple plantations"
 >>------------------------------------
 >> Transition: to sugar maple forest
-MapCode          5
+MapCode          6
 AllowHarvest?    no 		<< Do not harvest Plantations for maple syrup production
 LandCoverChange  RemoveTrees
 	abiebals 1-150
