@@ -1,0 +1,30 @@
+LandisData  Scenario
+
+Duration  90
+
+Species   "inputfiles\species.txt"
+
+Ecoregions      "inputfiles\ecoregions.txt"
+EcoregionsMap   "inputlyrs\ecoregions.img"
+
+CellLength  100 << meters, 100 x 100 m = 1 ha
+
+>> Succession Extension     Initialization File
+>> --------------------     -------------------
+   "Biomass Succession"    biomass-succession.txt
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------   -------------------
+   "Land Use Change"		land-use.txt
+   "Biomass Harvest"		harvest.txt
+
+>>   DisturbancesRandomOrder  yes  << optional parameter; default = no
+
+
+>> Other Extensions         Initialization File
+>> ----------------         -------------------
+>> "Output Max Species Age"    "max-spp-age-output.txt"
+"Output Biomass"	    "output-biomass.txt"
+
+>>RandomNumberSeed  4,357  << optional parameter; default = the seed is
+                         << randomly generated using the current time

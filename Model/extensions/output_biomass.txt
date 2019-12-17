@@ -1,0 +1,22 @@
+LandisData  "Output Biomass"
+
+Timestep  10
+
+Species    abiebals
+	   acerrubr
+	   acersacc
+	   betualle
+	   betupapy
+	   fraxamer
+	   piceglau
+	   pinubank
+	   pinuresi
+	   pinustro
+	   poputrem
+	   querelli
+	   querrubr
+	   thujocci
+	   tiliamer
+	   tsugcana
+
+MapNames  outputs/scn05_neutral/biomass-succession/biomass-{species}-{timestep}.img

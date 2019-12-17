@@ -1,0 +1,124 @@
+LandisData "Land Use"
+
+Timestep   10
+InputMaps  inputlyrs\dummy\land_cover{timestep}.img
+>> SiteLog    land-use\site-log.csv    << optional: default = don't generate log
+
+>>ExternalScript "C:\WORK\FUNCT.NET\TOY\Rscripts\03.DynLandCoverMaps.txt"
+>>ExternalExecutable "C:\Program Files\R\R-3.6.0\bin\R.exe"
+>>ExternalCommand "Rscript C:\WORK\FUNCT.NET\TOY\Rscripts\03.r"
+ExternalCommand "RunR.bat"
+
+
+LandUse "bare land"
+>>------------------------------------
+MapCode          1
+AllowHarvest?    yes
+LandCoverChange  NoChange
+	
+
+LandUse "non-forest"
+>>------------------------------------
+>> Transition: forest (or plantations, or bare land) to non-forest lands, e.g. croplands, urban
+MapCode          2
+AllowHarvest?    no
+PreventEstablishment
+LandCoverChange  RemoveTrees
+	abiebals 1-150
+	acerrubr 1-150
+	acersacc 1-300
+	betualle 1-300
+	betupapy 1-100
+	fraxamer 1-300
+	piceglau 1-300
+	pinubank 1-100
+	pinuresi 1-200
+	pinustro 1-400
+	poputrem 1-100
+	querelli 1-300
+	querrubr 1-250
+	thujocci 1-400
+	tiliamer 1-250
+	tsugcana 1-500
+
+
+LandUse "forest"
+>>------------------------------------
+MapCode          6
+AllowHarvest?    yes
+LandCoverChange  NoChange
+
+
+LandUse "quercus plantations"
+>>------------------------------------
+>> Transition: to quercus forest
+MapCode          3
+AllowHarvest?    yes
+LandCoverChange  RemoveTrees
+	abiebals 1-150
+	acerrubr 1-150
+	acersacc 1-300
+	betualle 1-300
+	betupapy 1-100
+	fraxamer 1-300
+	piceglau 1-300
+	pinubank 1-100
+	pinuresi 1-200
+	pinustro 1-400
+	poputrem 1-100
+	querelli 1-300
+	querrubr 1-250
+	thujocci 1-400
+	tiliamer 1-250
+	tsugcana 1-500
+	Plant querelli querrubr 
+
+
+LandUse "pinus plantations"
+>>------------------------------------
+>> Transition: to pine forest
+MapCode          4
+AllowHarvest?    yes
+LandCoverChange  RemoveTrees
+	abiebals 1-150
+	acerrubr 1-150
+	acersacc 1-300
+	betualle 1-300
+	betupapy 1-100
+	fraxamer 1-300
+	piceglau 1-300
+	pinubank 1-100
+	pinuresi 1-200
+	pinustro 1-400
+	poputrem 1-100
+	querelli 1-300
+	querrubr 1-250
+	thujocci 1-400
+	tiliamer 1-250
+	tsugcana 1-500
+	Plant pinubank pinuresi pinustro 
+
+
+LandUse "sugar maple plantations"
+>>------------------------------------
+>> Transition: to sugar maple forest
+MapCode          5
+AllowHarvest?    no 		<< Do not harvest Plantations for maple syrup production
+LandCoverChange  RemoveTrees
+	abiebals 1-150
+	acerrubr 1-150
+	acersacc 1-300
+	betualle 1-300
+	betupapy 1-100
+	fraxamer 1-300
+	piceglau 1-300
+	pinubank 1-100
+	pinuresi 1-200
+	pinustro 1-400
+	poputrem 1-100
+	querelli 1-300
+	querrubr 1-250
+	thujocci 1-400
+	tiliamer 1-250
+	tsugcana 1-500
+	Plant acersacc

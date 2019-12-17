@@ -1,0 +1,90 @@
+---
+title: "LandUse+ extension"
+author: "Núria Aquilué"
+date: "9/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(raster)
+library(viridis)
+```
+The objective is to set-up the LANDIS-II extension LandUse+ to simulate land-cover changes.
+
+
+## Dummy example
+
+I build a 4x4 landscape.  
+The potential land-covers are:  
+## Dummy example
+* urban areas (red)
+* forest (violet)
+* croplands (yellow)
+* oaks plantations (green)
+* pines plantations (blue).  
+
+The initial landscape (at year 0) only has urban areas and forest.  
+The next years (y10 and y20) crops appear, in y30 nothing changes.  
+At year 40 oaks are planted in previous forest land.  
+At year 60 pines should be planted in urban areas.  
+
+```{r land-cover-map, echo=FALSE}
+setwd("C:/WORK/FUNCT.NET/TOY")
+par(mfrow=c(2,4))
+land <- raster("Model/inputlyrs/land_cover0.img")
+plot(land, col=rainbow(5), main="Land-cover y0", legend=F)
+land <- raster("Model/inputlyrs/land_cover10.img")
+plot(land, col=rainbow(5), main="Land-cover y10", legend=F)
+land <- raster("Model/inputlyrs/land_cover20.img")
+plot(land, col=rainbow(5), main="Land-cover y20", legend=F)
+plot(land, col=rainbow(5), main="Land-cover y30", legend=F)
+land <- raster("Model/inputlyrs/land_cover40.img")
+plot(land, col=rainbow(5), main="Land-cover y40", legend=F)
+plot(land, col=rainbow(5), main="Land-cover y50", legend=F)
+land <- raster("Model/inputlyrs/land_cover60.img")
+plot(land, col=rainbow(5), main="Land-cover y60", legend=F)
+plot(land, col=rainbow(5), main="Land-cover y70", legend=F)
+```
+
+At year 0, up to 7 types of forest communities are randomly allocated in forest area and 3 ecoregions are initialized.  
+**In urban areas (at year 0), I assign 0 to initial forest communities and ecoregion**
+```{r forest-map, echo=FALSE}
+setwd("C:/WORK/FUNCT.NET/TOY")
+par(mfrow=c(1,2))
+forest <- raster("Model/inputlyrs/initial_communities.img")
+plot(forest, col=c("grey", rainbow(7)), main="Initial tree communities")
+eco <- raster("Model/inputlyrs/ecoregions.img")
+plot(eco, col=c("grey", viridis(3)), main="Ecoregions")
+```
+
+I run LANDIS-II with "Land Use Change" extension specified in *land-use.txt* (see attached).  
+
+**The biomass maps look like:**    
+```{r biomass-map, echo=FALSE}
+setwd("C:/WORK/FUNCT.NET/TOY")
+## Biomass maps
+species <- c("abiebals", "acerrubr", "acersacc", "betualle", "betupapy", "fraxamer", "piceglau", "pinubank", 
+             "pinuresi", "pinustro", "poputrem", "querelli", "querrubr", "thujocci", "tiliamer", "tsugcana")
+par(mfrow=c(2,4))
+for(year in seq(0,70,10)){
+  biom <- raster(paste0("Model/outputs/biomass/abiebals-",year,".img"))
+  for(spp in species[-1]){
+    aux <- raster(paste0("Model/outputs/biomass/",spp,"-",year,".img"));  biom <- biom + aux
+  }
+  # print(paste0("Biomass y", year, " per pixel: "), biom[]/1000))
+  plot(biom/1000, col=c("grey", viridis(4)), main=paste0("Biomass y", year))               
+}
+```
+
+### Conversion from forest to crops WORKS
+
+### Conversion from previous forest, to crop, then to plantations WORKS
+
+### Conversion from non-forest to forest DOES NOT WORK
+I want to convert non-forest zones at the beginning of the simulation to forest in the future (y60).   
+These non-forest zones at year 0 do not need any cohort assigned.  
+I assign MapCode 0, and MapCode 0 doesn't have any cohort, so anything grows 
+(even if I don't eventually a cohort may establish there).  
+The second option is to assign to these non-forest zones the Ecoregion 0 and this be innactive.  
+In any case, I cannot turn non-forest to forest.
