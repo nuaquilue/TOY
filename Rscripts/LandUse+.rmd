@@ -1,7 +1,7 @@
 ---
 title: "LandUse+ extension"
 author: "Núria Aquilué"
-date: "9/12/2019"
+date: "21/02/2019"
 output: html_document
 ---
 
@@ -10,55 +10,140 @@ knitr::opts_chunk$set(echo = TRUE)
 library(raster)
 library(viridis)
 ```
-The objective is to set-up the LANDIS-II extension LandUse+ to simulate land-cover changes.
+**The objective is to set-up the LANDIS-II extension LandUse+ to simulate land-cover changes.**
 
+## Dummy landscape
 
-## Dummy example
+I build a 4x4 landscape. The potential land-covers are:  
+- urban areas   
+- forest   
+- croplands   
+- oaks plantations  
+- pines plantations   
 
-I build a 4x4 landscape.  
-The potential land-covers are:  
-## Dummy example
-* urban areas (red)
-* forest (violet)
-* croplands (yellow)
-* oaks plantations (green)
-* pines plantations (blue).  
+**At year 0:**  
+- The initial landscape has urban areas and croplands in the lower row, and forest in the upper 3 rows.     
+- Up to 7 types of forest communities are randomly allocated in forest areas and 3 ecoregions are initialized.  
+- In non-forest areas, I assign NA to initial forest communities.  
 
-The initial landscape (at year 0) only has urban areas and forest.  
-The next years (y10 and y20) crops appear, in y30 nothing changes.  
-At year 40 oaks are planted in previous forest land.  
-At year 60 pines should be planted in urban areas.  
-
-```{r land-cover-map, echo=FALSE}
-setwd("C:/WORK/FUNCT.NET/TOY")
-par(mfrow=c(2,4))
-land <- raster("Model/inputlyrs/land_cover0.img")
-plot(land, col=rainbow(5), main="Land-cover y0", legend=F)
-land <- raster("Model/inputlyrs/land_cover10.img")
-plot(land, col=rainbow(5), main="Land-cover y10", legend=F)
-land <- raster("Model/inputlyrs/land_cover20.img")
-plot(land, col=rainbow(5), main="Land-cover y20", legend=F)
-plot(land, col=rainbow(5), main="Land-cover y30", legend=F)
-land <- raster("Model/inputlyrs/land_cover40.img")
-plot(land, col=rainbow(5), main="Land-cover y40", legend=F)
-plot(land, col=rainbow(5), main="Land-cover y50", legend=F)
-land <- raster("Model/inputlyrs/land_cover60.img")
-plot(land, col=rainbow(5), main="Land-cover y60", legend=F)
-plot(land, col=rainbow(5), main="Land-cover y70", legend=F)
-```
-
-At year 0, up to 7 types of forest communities are randomly allocated in forest area and 3 ecoregions are initialized.  
-**In urban areas (at year 0), I assign 0 to initial forest communities and ecoregion**
 ```{r forest-map, echo=FALSE}
 setwd("C:/WORK/FUNCT.NET/TOY")
 par(mfrow=c(1,2))
 forest <- raster("Model/inputlyrs/initial_communities.img")
-plot(forest, col=c("grey", rainbow(7)), main="Initial tree communities")
+plot(forest, col=rainbow(7), main="Initial tree communities")
 eco <- raster("Model/inputlyrs/ecoregions.img")
-plot(eco, col=c("grey", viridis(3)), main="Ecoregions")
+plot(eco, col=viridis(3), main="Ecoregions")
 ```
 
-I run LANDIS-II with "Land Use Change" extension specified in *land-use.txt* (see attached).  
+**The initial communities are:**   
+
+>Non-forest (to identify urban areas, croplands, bare land, ...  in the first time step, year=0)  
+MapCode  0  
+
+> Old jackpine oak   
+MapCode  1  
+   acerrubr 30   
+   pinubank 80 90  
+   pinuresi 110 140  
+   querelli 40 120 240  
+   
+> Young jackpine oak  
+MapCode  2  
+   pinubank 30 50  
+   querelli 10 40 70  
+   
+> Young aspen     
+MapCode 3  
+   poputrem 10 20  
+   
+> Old aspen-birch  
+MapCode 4  
+   acerrubr 10 30  
+   betualle 10 40  
+   betupapy 80 90  
+   fraxamer 10 50  
+   poputrem 90 100  
+   pinustro 240  
+   querrubr 20 50  
+   thujocci 60  
+   tiliamer 10  
+   
+> Young northern hardwoods   
+MapCode 5   
+   abiebals 10   
+   acerrubr 20 40   
+   acersacc 10 20   
+   betualle 40 70   
+   betupapy 90   
+   fraxamer 30 40 60   
+   poputrem 90  
+   querrubr 40 80  
+   thujocci 30 80   
+   tiliamer 10 30 50   
+   tsugcana 10   
+   
+> Old maple hardwoods   
+MapCode 6   
+   abiebals 10 60 120  
+   acerrubr 90 120   
+   acersacc 20 50 150 200  
+   betualle 40 140 200   
+   fraxamer 10 100 130 180   
+   piceglau 180   
+   querrubr 100 160 180  
+   thujocci 200 240 260  
+   tiliamer 20 80 110 150   
+   tsugcana 30 80 120 220 320 340   
+   
+> Old pine - spruce - fir  
+MapCode 7    
+   abiebals 10 50 80  
+   piceglau 100 140 180 200 220  
+   pinuresi 140 160 180  
+   pinustro 200 280 350  
+
+
+## Dummy land-cover changes
+
+- At year 0, all the landscape is initalized as forest (green), even if only true forest areas will have initial biomass > 0. **
+- At year 10, the initial forest map consists of urban areas (red), crops (yellow) and forest(green).  
+- At year 20, crops (yellow) appear in forest areas (green).  
+- At year 30, crops (yellow) appear in forest areas (green).  
+- At year 40, oaks (blue) are planted in croplands (yellow).  
+- At year 50, nothing new happens.  
+- At year 60, pines (violet) are planted in croplands (yellow).  
+- At year 70, urban areas (red) are transformed to croplands (yellow).  
+- At year 80, mapples (grey) are planted in forest (green).  
+- At year 90, nothing new happens. 
+
+** *I have to initialize all the landscape with a land-cover category that allows changes, establishment, colonization, ... so any land-cover type can be converted to a second land-cover type. When initializing the initial cohorts for LANDIS-II, a unique mpa code is assigned to the land-cover types without forest biomass (e.g. urban areas, water bodies, bare land, and croplands). Such map code (e.g. 0) doesn't have any species associated to (see initial communities). In the second type step, changes are applied so  the intial land-cover distribution is represented.*
+
+```{r land-cover-map, echo=FALSE}
+setwd("C:/WORK/FUNCT.NET/TOY")
+par(mfrow=c(2,5))
+land <- raster("Model/inputlyrs/land_cover0.img")
+plot(land, col="#00FF66FF", main="Land-cover y0", legend=F)
+land <- raster("Model/inputlyrs/land_cover10.img")
+plot(land, col=c("#FF0000FF","#CCFF00FF","#00FF66FF"), main="Land-cover y10", legend=F)
+land <- raster("Model/inputlyrs/land_cover20.img")
+plot(land, col=c("#FF0000FF","#CCFF00FF","#00FF66FF"), main="Land-cover y20", legend=F)
+land <- raster("Model/inputlyrs/land_cover30.img")
+plot(land, col=c("#FF0000FF","#CCFF00FF","#00FF66FF"), main="Land-cover y30", legend=F)
+land <- raster("Model/inputlyrs/land_cover40.img")
+plot(land, col=rainbow(5)[-5], main="Land-cover y40", legend=F)
+land <- raster("Model/inputlyrs/land_cover50.img")
+plot(land, col=rainbow(5)[-5], main="Land-cover y50", legend=F)
+land <- raster("Model/inputlyrs/land_cover60.img")
+plot(land, col=rainbow(5), main="Land-cover y60", legend=F)
+land <- raster("Model/inputlyrs/land_cover70.img")
+plot(land, col=rainbow(5), main="Land-cover y70", legend=F)
+land <- raster("Model/inputlyrs/land_cover80.img")
+plot(land, col=c(rainbow(5),"grey"), main="Land-cover y80", legend=F)
+land <- raster("Model/inputlyrs/land_cover90.img")
+plot(land, col=c(rainbow(5),"grey"), main="Land-cover y90", legend=F)
+```
+
+## Dummy outputs
 
 **The biomass maps look like:**    
 ```{r biomass-map, echo=FALSE}
@@ -66,25 +151,41 @@ setwd("C:/WORK/FUNCT.NET/TOY")
 ## Biomass maps
 species <- c("abiebals", "acerrubr", "acersacc", "betualle", "betupapy", "fraxamer", "piceglau", "pinubank", 
              "pinuresi", "pinustro", "poputrem", "querelli", "querrubr", "thujocci", "tiliamer", "tsugcana")
-par(mfrow=c(2,4))
-for(year in seq(0,70,10)){
-  biom <- raster(paste0("Model/outputs/biomass/abiebals-",year,".img"))
+par(mfrow=c(2,5))
+for(year in seq(0,90,10)){
+  biom <- raster(paste0("Model/outputs/scn04_landuse-dyn/biomass-succession/biomass-abiebals-",year,".img"))
   for(spp in species[-1]){
-    aux <- raster(paste0("Model/outputs/biomass/",spp,"-",year,".img"));  biom <- biom + aux
+    aux <- raster(paste0("Model/outputs/scn04_landuse-dyn/biomass-succession/biomass-",spp,"-",year,".img"))  
+    biom <- biom + aux
   }
-  # print(paste0("Biomass y", year, " per pixel: "), biom[]/1000))
-  plot(biom/1000, col=c("grey", viridis(4)), main=paste0("Biomass y", year))               
+  biom[] <- biom[]/1000
+  biom[biom[]==0] <- NA
+  plot(biom, col=c("grey", viridis(5)), main=paste0("Biomass y", year))
 }
 ```
 
-### Conversion from forest to crops WORKS
+**A few insights:**   
 
-### Conversion from previous forest, to crop, then to plantations WORKS
+1. Most (if not all) the land-cover transitions of interesst have been implemented and work:  
+- forest to cropland  
+- cropland to forest plantation  
+- forest to plantation  
+- urban to cropland (very unlikely!)  
+Forest to urban hasn't been tested but it's conceptually as forest to cropland.  
 
-### Conversion from non-forest to forest DOES NOT WORK
-I want to convert non-forest zones at the beginning of the simulation to forest in the future (y60).   
-These non-forest zones at year 0 do not need any cohort assigned.  
-I assign MapCode 0, and MapCode 0 doesn't have any cohort, so anything grows 
-(even if I don't eventually a cohort may establish there).  
-The second option is to assign to these non-forest zones the Ecoregion 0 and this be innactive.  
-In any case, I cannot turn non-forest to forest.
+2. Biomass of non-forest areas is >0 eventually. I think this happens because establishment is not effectively prevented as it should be according to the specification "PreventEstablishment" of LandUse+ extension.  One solution may be to remove (i.e. cut) everything growing in non-forest areas (by M.Duveneck).  
+
+3. Management areas cannot not dynamic. This means that new plantations cannot be harvested using the Harvesting extension (losing precision, standard ranking, ...) and something simpler might be implemented throught the LandUse+ extension (this is still to be explored according to M. Duveneck).  
+
+4. I initialized a bigger neutral landscape, 100x100, using a clustering algorithm (see next figure where urban areas are grey, croplands orange and forest green). Forest cohorts were randomly initialized with the same intial communities used in the previous example.  
+Whit this landscape I don't only want to simulate basic land-cover transitions, but explore what the option *"LandCoverChange InsectDefoliation"* exactly does. This may allow us to easy implement extreme, unkown disturbances. Work in progress.
+
+   
+```{r neutralmap, echo=FALSE}
+forest <- raster("C:/WORK/FUNCT.NET/TOY/Model/inputlyrs/neutral/land_cover10.img")
+plot(forest, col=c("grey", "orange", "darkgreen"), main="Land-covers")
+
+forest <- raster("C:/WORK/FUNCT.NET/TOY/Model/inputlyrs/neutral/initial_communities.img")
+plot(forest, col=c("grey", rainbow(7)), main="Initial tree communities")
+
+```
