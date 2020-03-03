@@ -24,6 +24,8 @@ if(current.time>10){
   PATCH.ID <- LAND.COVER
   PATCH.ID[!is.na(PATCH.ID[]) & PATCH.ID[]<tree] <-  NA
   PATCH.ID[PATCH.ID[]==tree] <-  1
+  # only save stands made by trees? what about plantations
+  # I thinks this piece of code needs be reformulated
   PATCH.ID <- landscapemetrics::get_patches(PATCH.ID, directions=8)[[1]]
   patches <- data.frame(id=PATCH.ID[], coordinates(PATCH.ID))
   patches.area <- filter(patches, !is.na(id)) %>% group_by(id) %>% summarize(area=length(id), xm=round(mean(x),1), ym=round(mean(y),1))
