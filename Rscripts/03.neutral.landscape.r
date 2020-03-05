@@ -94,7 +94,7 @@ plot(LANDmpd1.s3, legend=T, col=c("grey90", rainbow(6)))
 plot(LANDmpd2.s3, legend=T, col=c("grey90", rainbow(6))) 
 
 
-## Finally, use the Random cluster approach to split the forest area in forest stands,
+## 7. Finally, use the Random cluster approach to split the forest area in forest stands,
 ## and add some stochasticity to add "salt-and-pepper" effect.
 stands <- nlm_randomcluster(ncol, nrow, resolution=100, p=0.28, ai=c(0.6, 0.4), neighbourhood=8, rescale=F)
 LANDmpd1.s4 <- (LANDmpd1-1)*stands*sample(c(1,3), ncell(stands), replace = T, prob=c(0.7,0.3))
@@ -120,6 +120,12 @@ plot(LANDmpd1.s6, legend=T, col=c("grey90", rainbow(6)))
 plot(LANDmpd2.s6, legend=T, col=c("grey90", rainbow(8))) 
 
 
+############# Extra
+LANDrc <- nlm_randomcluster(ncol, nrow, resolution=100, p=0.4, ai=c(0.5, 0.5), neighbourhood=8, rescale=F)
+stands <- nlm_randomcluster(ncol, nrow, resolution=100, p=0.28, ai=c(0.5, 0.3, 0.1, 0.1), neighbourhood=8, rescale=F)
+LANDrc.s <- (LANDrc-1)*stands
+par(mfrow=c(1,2))
+plot(LANDrc-1); plot(LANDrc.s, col=c("grey90", viridis(4)))
 
 
 #### Graph building will depend on forest communities, and tree species dispersal capacity
